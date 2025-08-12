@@ -55,7 +55,6 @@ export const messageHandler = (bot: TelegramBot, msg: Message) => {
     return;
   }
 
-  // Если дошли сюда — значит пора вызвать обработчик упражнения
   const handler = userData.exercise ? exerciseHandlers[userData.exercise] : null;
   if (handler) {
     handler(bot, msg);

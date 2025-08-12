@@ -12,7 +12,6 @@ export const callbackHandler = (bot: TelegramBot, query: CallbackQuery) => {
       gender: data === 'gender_male' ? 'male' : 'female'
     });
 
-    // После выбора пола сразу отправляем выбор упражнения
     bot.sendMessage(chatId, 'Отлично! Теперь выбери упражнение, которое хочешь делать:', {
       reply_markup: {
         inline_keyboard: [

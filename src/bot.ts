@@ -3,8 +3,9 @@ import { config } from 'dotenv';
 import { startHandler } from './handlers/startHandler';
 import { callbackHandler } from './handlers/callbackHandler';
 import { messageHandler } from './handlers/messageHandler';
+import { photoHandler } from './handlers/photoHandler';
 
-config(); // Загружаем переменные из .env
+config(); 
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
@@ -22,8 +23,16 @@ bot.on('callback_query', (query) => {
 });
 
 bot.on('message', (msg) => {
-  // Обрабатываем только текстовые сообщения, которые не являются командами
+  
   if (msg.text && !msg.text.startsWith('/')) {
     messageHandler(bot, msg);
   }
 });
+
+
+bot.onText(/\/ImgPlan/, (msg) => {
+  photoHandler(bot, msg);
+});
+bot.on('photo', (msg) => {
+  photoHandler(bot, msg);
+})
