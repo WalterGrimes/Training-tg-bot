@@ -6,5 +6,6 @@ export interface UserData {
   PullUp?: number;
   PushUp?: number;
   exercise?: 'exercise_bench' | 'exercise_pullups' | 'exercise_dips';
+  timestamp?: number;
   [key: string]: any;
 }

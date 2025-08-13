@@ -5,7 +5,7 @@ import { callbackHandler } from './handlers/callbackHandler';
 import { messageHandler } from './handlers/messageHandler';
 import { photoHandler } from './handlers/photoHandler';
 
-config(); 
+config();
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
@@ -14,25 +14,29 @@ if (!token) {
 
 const bot = new TelegramBot(token, { polling: true });
 
+// Обработчики команд
 bot.onText(/\/start/, (msg) => {
   startHandler(bot, msg.chat.id);
 });
 
+bot.onText(/\/ImgPlan/, (msg) => {
+  photoHandler(bot, msg);
+});
+
+// Обработчики событий
 bot.on('callback_query', (query) => {
   callbackHandler(bot, query);
 });
 
+bot.on('photo', (msg) => {
+  photoHandler(bot, msg);
+});
+
+// Единый обработчик сообщений
 bot.on('message', (msg) => {
-  
   if (msg.text && !msg.text.startsWith('/')) {
     messageHandler(bot, msg);
   }
 });
 
-
-bot.onText(/\/ImgPlan/, (msg) => {
-  photoHandler(bot, msg);
-});
-bot.on('photo', (msg) => {
-  photoHandler(bot, msg);
-})
+console.log('Бот запущен...');

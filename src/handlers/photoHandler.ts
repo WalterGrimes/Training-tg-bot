@@ -8,6 +8,18 @@ import { TrainingMemory } from "../types/training";
 
 export const trainingMemory: Record<number, TrainingMemory> = {};
 
+// Очистка старых записей каждые 30 минут
+setInterval(() => {
+  const now = Date.now();
+  for (const chatIdStr in trainingMemory) {
+    const chatId = Number(chatIdStr);
+    const data = trainingMemory[chatId];
+    if (now - (data.timestamp || 0) > 30 * 60 * 1000) {
+      delete trainingMemory[chatId];
+      console.log(`Очищен старый запрос для chatId: ${chatId}`);
+    }
+  }
+}, 30 * 60 * 1000);
 
 export const photoHandler = async (bot: TelegramBot, msg: Message) => {
     const chatId = msg.chat.id;
@@ -59,13 +71,14 @@ export const photoHandler = async (bot: TelegramBot, msg: Message) => {
         const schedule = parseTrainingText(cleanedText);
         
         if (!schedule) {
-            await bot.sendMessage(chatId, '❌ Не удалось распознать программу тренировок. Убедитесь, что фото четкое и содержит данные в формате "вес x повторения".');
+            await bot.sendMessage(chatId, '❌ Не удалось распознать программу тренировок.');
             return;
         }
 
         trainingMemory[chatId] = {
             text: cleanedText,
-            schedule
+            schedule,
+            timestamp: Date.now()
         };
 
         let responseText = '📋 Распознанная программа тренировок:\n\n';
@@ -82,6 +95,7 @@ export const photoHandler = async (bot: TelegramBot, msg: Message) => {
 
     } catch (error) {
         console.error('Ошибка обработки фото:', error);
-        await bot.sendMessage(chatId, '❌ Ошибка при обработке фото. Пожалуйста, попробуйте еще раз или отправьте текст программы вручную.');
+        await bot.sendMessage(chatId, '❌ Ошибка при обработке фото. Пожалуйста, попробуйте ещё раз.');
+        delete trainingMemory[chatId];
     }
 };
